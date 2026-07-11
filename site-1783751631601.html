@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>3D Adventure Bike Rider - Open World Missions</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+        #game-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        #ui-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            pointer-events: none;
+            z-index: 100;
+        }
+        #top-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        #stats {
+            display: flex;
+            gap: 30px;
+        }
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #aaa;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffaa00;
+        }
+        #speedometer {
+            font-size: 32px;
+            font-weight: bold;
+            color: #00ffaa;
+        }
+        #mission-panel {
+            background: rgba(0,0,0,0.7);
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #ffaa00;
+            backdrop-filter: blur(5px);
+        }
+        #mission-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffaa00;
+            margin-bottom: 5px;
+        }
+        #mission-desc {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        #mission-progress {
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        #mission-progress-bar {
+            height: 100%;
+            background: #ffaa00;
+            width: 0%;
+        }
+        #bottom-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .control-panel {
+            display: flex;
+            gap: 15px;
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+            pointer-events: auto;
+        }
+        .ctrl-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.5);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+        }
+        .ctrl-btn:active {
+            background: #ffaa00;
+            transform: scale(0.95);
+        }
+        .ctrl-btn.large {
+            width: 80px;
+            height: 80px;
+        }
+        #nitro-btn {
+            background: rgba(255, 0, 0, 0.3);
+            border-color: #ff0000;
+        }
+        #camera-btn {
+            background: rgba(0, 255, 0, 0.3);
+            border-color: #00ff00;
+        }
+        #pause-menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            z-index: 200;
+            display: none;
+            border: 2px solid #ffaa00;
+            min-width: 300px;
+        }
+        #pause-menu h2 {
+            color: #ffaa00;
+            margin-top: 0;
+        }
+        .menu-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            margin: 10px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 200px;
+            border: 1px solid #555;
+        }
+        .menu-btn:hover {
+            background: #ffaa00;
+            color: black;
+        }
+        #shop-menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            padding: 30px;
+            border-radius: 20px;
+            color: white;
+            z-index: 300;
+            display: none;
+            border: 2px solid #ffaa00;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .upgrade-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #333;
+        }
+        .upgrade-info {
+            flex: 1;
+        }
+        .upgrade-name {
+            font-weight: bold;
+            color: #ffaa00;
+        }
+        .upgrade-desc {
+            font-size: 12px;
+            color: #aaa;
+        }
+        .upgrade-price {
+            color: #ffaa00;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+        .buy-btn {
+            background: #ffaa00;
+            color: black;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .buy-btn:disabled {
+            background: #555;
+            color: #888;
+            cursor: not-allowed;
+        }
+        #joystick-area {
+            width: 120px;
+            height: 120px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 60px;
+            position: relative;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        #joystick {
+            width: 50px;
+            height: 50px;
+            background: #ffaa00;
+            border-radius: 25px;
+            position: absolute;
+            top: 35px;
+            left: 35px;
+            cursor: pointer;
+        }
+        #nitro-bar-container {
+            width: 200px;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        #nitro-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ffff00);
+            width: 100%;
+        }
+        #health-bar-container {
+            width: 200px;
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        #health-bar {
+            height: 100%;
+            background: #00ff00;
+            width: 100%;
+        }
+        @media (max-width: 768px) {
+            #top-panel {
+                flex-direction: column;
+                gap: 10px;
+            }
+            #stats {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .ctrl-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+            }
+            .ctrl-btn.large {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    
+    <div id="ui-overlay">
+        <div id="top-panel">
+            <div id="stats">
+                <div class="stat">
+                    <span class="stat-label">COINS</span>
+                    <span class="stat-value" id="coin-counter">1250</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">LEVEL</span>
+                    <span class="stat-value" id="level-display">5</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">XP</span>
+                    <span class="stat-value" id="xp-display">450/1000</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">DISTANCE</span>
+                    <span class="stat-value" id="distance-display">0 km</span>
+                </div>
+            </div>
+            <div id="speedometer">0 km/h</div>
+        </div>
+        
+        <div id="mission-panel">
+            <div id="mission-title">Current Mission: Mountain Trail</div>
+            <div id="mission-desc">Reach the mountain checkpoint within 2 minutes</div>
+            <div id="mission-progress">
+                <div id="mission-progress-bar" style="width: 35%;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                <span>⏱️ 1:25 left</span>
+                <span>📍 3/5 checkpoints</span>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 20px; margin-top: 10px;">
+            <div id="health-bar-container">
+                <div id="health-bar" style="width: 100%;"></div>
+            </div>
+            <div id="nitro-bar-container">
+                <div id="nitro-bar" style="width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="bottom-controls">
+        <div class="control-panel">
+            <div id="joystick-area">
+                <div id="joystick"></div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="ctrl-btn" id="brake-btn">⏹️</div>
+                <div class="ctrl-btn" id="nitro-btn">⚡</div>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="ctrl-btn" id="camera-btn">📷</div>
+            <div class="ctrl-btn" id="pause-btn">⏸️</div>
+            <div class="ctrl-btn" id="shop-btn">🛒</div>
+            <div class="ctrl-btn large" id="accelerate-btn">▶️</div>
+        </div>
+    </div>
+    
+    <div id="pause-menu">
+        <h2>GAME PAUSED</h2>
+        <button class="menu-btn" onclick="resumeGame()">Resume</button>
+        <button class="menu-btn" onclick="openShop()">Bike Shop</button>
+        <button class="menu-btn" onclick="saveGame()">Save Game</button>
+        <button class="menu-btn" onclick="loadGame()">Load Game</button>
+        <button class="menu-btn" onclick="restartMission()">Restart Mission</button>
+        <button class="menu-btn" onclick="toggleControls()">Controls: Touch</button>
+    </div>
+    
+    <div id="shop-menu">
+        <h2 style="color: #ffaa00; text-align: center;">BIKE SHOP</h2>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <span>Your Coins: </span><span id="shop-coins" style="color: #ffaa00; font-weight: bold;">1250</span>
+        </div>
+        
+        <div style="display: flex; justify-content: space-around; margin-bottom: 30px;">
+            <div class="ctrl-btn" style="background: #ffaa00;" onclick="showUpgrades()">🔧 Upgrades</div>
+            <div class="ctrl-btn" onclick="showBikes()">🏍️ Bikes</div>
+        </div>
+        
+        <div id="shop-content">
+            <!-- Upgrades will be dynamically loaded here -->
+        </div>
+        
+        <button class="menu-btn" onclick="closeShop()" style="margin-top: 20px;">Close</button>
+    </div>
+
+    <!-- Import Three.js and required libraries -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+        
+        // --- Game State ---
+        const gameState = {
+            coins: 1250,
+            level: 5,
+            xp: 450,
+            maxXp: 1000,
+            health: 100,
+            maxHealth: 100,
+            nitro: 100,
+            maxNitro: 100,
+            speed: 0,
+            maxSpeed: 200,
+            distance: 0,
+            currentMission: 0,
+            missions: [
+                { title: "Mountain Trail", desc: "Reach the mountain checkpoint within 2 minutes", type: "checkpoint", progress: 0, maxProgress: 5, timeLeft: 120, reward: 200 },
+                { title: "Package Delivery", desc: "Deliver package to the city center", type: "delivery", progress: 0, maxProgress: 1, timeLeft: 300, reward: 300 },
+                { title: "Police Chase", desc: "Escape from the police", type: "escape", progress: 0, maxProgress: 100, timeLeft: 180, reward: 400 },
+                { title: "Stunt Master", desc: "Perform 3 wheelies and 2 jumps", type: "stunt", progress: 0, maxProgress: 5, timeLeft: 120, reward: 250 }
+            ],
+            bike: {
+                speed: 1.0,
+                brake: 1.0,
+                nitro: 1.0,
+                suspension: 1.0,
+                handling: 1.0
+            },
+            unlockedBikes: ['trail'],
+            currentBike: 'trail',
+            cameraMode: 2, // 0: first person, 1: third person close, 2: third person far
+            controls: 'touch', // 'touch' or 'keyboard'
+            paused: false
+        };
+        
+        // --- Game Variables ---
+        let scene, camera, renderer, labelRenderer;
+        let bike, bikeGroup;
+        let terrain, road, buildings = [];
+        let trees = [];
+        let trafficVehicles = [];
+        let checkpoints = [];
+        let coins = [];
+        
+        let clock = new THREE.Clock();
+        
+        // Input handling
+        let keyState = {
+            forward: false,
+            backward: false,
+            left: false,
+            right: false,
+            brake: false,
+            nitro: false
+        };
+        
+        // Camera positions
+        const cameraPositions = [
+            { pos: new THREE.Vector3(0, 1.5, 0.5), look: new THREE.Vector3(0, 1.5, 2) }, // First person
+            { pos: new THREE.Vector3(0, 2, -3), look: new THREE.Vector3(0, 1.5, 2) }, // Third person close
+            { pos: new THREE.Vector3(0, 3, -6), look: new THREE.Vector3(0, 1.5, 3) } // Third person far
+        ];
+        
+        // Joystick handling
+        let joystick = document.getElementById('joystick');
+        let joystickArea = document.getElementById('joystick-area');
+        let joystickActive = false;
+        let joystickVector = new THREE.Vector2(0, 0);
+        
+        // --- Initialize Scene ---
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87CEEB); // Sky blue
+            scene.fog = new THREE.Fog(0x87CEEB, 100, 500);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 3, -6);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('game-container').appendChild(renderer.domElement);
+            
+            // CSS2 Renderer for labels
+            labelRenderer = new CSS2DRenderer();
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.domElement.style.position = 'absolute';
+            labelRenderer.domElement.style.top = '0px';
+            labelRenderer.domElement.style.left = '0px';
+            labelRenderer.domElement.style.pointerEvents = 'none';
+            document.getElementById('game-container').appendChild(labelRenderer.domElement);
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404060);
+            scene.add(ambientLight);
+            
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+            dirLight.position.set(50, 100, 50);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 2048;
+            dirLight.shadow.mapSize.height = 2048;
+            const d = 200;
+            dirLight.shadow.camera.left = -d;
+            dirLight.shadow.camera.right = d;
+            dirLight.shadow.camera.top = d;
+            dirLight.shadow.camera.bottom = -d;
+            dirLight.shadow.camera.near = 1;
+            dirLight.shadow.camera.far = 200;
+            scene.add(dirLight);
+            
+            // Create environment
+            createTerrain();
+            createRoad();
+            createForest();
+            createBuildings();
+            createTraffic();
+            createCheckpoints();
+            createCoins();
+            
+            // Create bike
+            createBike();
+            
+            // Event listeners
+            window.addEventListener('resize', onWindowResize, false);
+            window.addEventListener('keydown', onKeyDown);
+            window.addEventListener('keyup', onKeyUp);
+            
+            // UI Event listeners
+            document.getElementById('accelerate-btn').addEventListener('mousedown', () => { keyState.forward = true; });
+            document.getElementById('accelerate-btn').addEventListener('mouseup', () => { keyState.forward = false; });
+            document.getElementById('accelerate-btn').addEventListener('mouseleave', () => { keyState.forward = false; });
+            
+            document.getElementById('brake-btn').addEventListener('mousedown', () => { keyState.brake = true; });
+            document.getElementById('brake-btn').addEventListener('mouseup', () => { keyState.brake = false; });
+            document.getElementById('brake-btn').addEventListener('mouseleave', () => { keyState.brake = false; });
+            
+            document.getElementById('nitro-btn').addEventListener('mousedown', () => { keyState.nitro = true; });
+            document.getElementById('nitro-btn').addEventListener('mouseup', () => { keyState.nitro = false; });
+            document.getElementById('nitro-btn').addEventListener('mouseleave', () => { keyState.nitro = false; });
+            
+            document.getElementById('camera-btn').addEventListener('click', toggleCamera);
+            document.getElementById('pause-btn').addEventListener('click', togglePause);
+            document.getElementById('shop-btn').addEventListener('click', openShop);
+            
+            // Joystick
+            joystick.addEventListener('mousedown', startJoystick);
+            joystick.addEventListener('touchstart', startJoystick);
+            document.addEventListener('mousemove', moveJoystick);
+            document.addEventListener('touchmove', moveJoystick);
+            document.addEventListener('mouseup', stopJoystick);
+            document.addEventListener('touchend', stopJoystick);
+            
+            // Start animation
+            animate();
+        }
+        
+        // --- Create Environment ---
+        function createTerrain() {
+            const geometry = new THREE.PlaneGeometry(2000, 2000, 256, 256);
+            const material = new THREE.MeshStandardMaterial({ color: 0x3a5f0b });
+            terrain = new THREE.Mesh(geometry, material);
+            terrain.rotation.x = -Math.PI / 2;
+            terrain.position.y = -1;
+            terrain.receiveShadow = true;
+            scene.add(terrain);
+            
+            // Add some hills
+            const hillGeo = new THREE.CylinderGeometry(30, 40, 20, 32);
+            const hillMat = new THREE.MeshStandardMaterial({ color: 0x4a6f1b });
+            for (let i = 0; i < 20; i++) {
+                const hill = new THREE.Mesh(hillGeo, hillMat);
+                hill.position.x = (Math.random() - 0.5) * 800;
+                hill.position.z = (Math.random() - 0.5) * 800;
+                hill.position.y = 9;
+                hill.scale.set(1, Math.random() * 2 + 1, 1);
+                hill.castShadow = true;
+                hill.receiveShadow = true;
+                scene.add(hill);
+            }
+        }
+        
+        function createRoad() {
+            const roadMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
+            const lineMat = new THREE.MeshStandardMaterial({ color: 0xffff00 });
+            
+            // Main road
+            for (let i = -5; i <= 5; i++) {
+                const roadPiece = new THREE.Mesh(new THREE.BoxGeometry(20, 0.2, 100), roadMat);
+                roadPiece.position.set(i * 30, 0, i * 50);
+                roadPiece.receiveShadow = true;
+                scene.add(roadPiece);
+                
+                // Road lines
+                for (let j = -2; j <= 2; j++) {
+                    const line = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.3, 10), lineMat);
+                    line.position.set(i * 30, 0.2, j * 50);
+                    line.receiveShadow = true;
+                    scene.add(line);
+                }
+            }
+        }
+        
+        function createForest() {
+            const treeTrunkMat = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+            const treeLeafMat = new THREE.MeshStandardMaterial({ color: 0x228B22 });
+            
+            for (let i = 0; i < 200; i++) {
+                const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1, 1.5, 5), treeTrunkMat);
+                const leaves = new THREE.Mesh(new THREE.ConeGeometry(3, 4, 8), treeLeafMat);
+                
+                const treeGroup = new THREE.Group();
+                trunk.position.y = 2.5;
+                leaves.position.y = 5;
+                
+                treeGroup.add(trunk);
+                treeGroup.add(leaves);
+                
+                treeGroup.position.x = (Math.random() - 0.5) * 800;
+                treeGroup.position.z = (Math.random() - 0.5) * 800;
+                treeGroup.position.y = 0;
+                
+                treeGroup.castShadow = true;
+                treeGroup.receiveShadow = true;
+                
+                scene.add(treeGroup);
+                trees.push(treeGroup);
+            }
+        }
+        
+        function createBuildings() {
+            const buildingMat = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+            const roofMat = new THREE.MeshStandardMaterial({ color: 0xaa5555 });
+            
+            for (let i = 0; i < 50; i++) {
+                const height = Math.random() * 20 + 5;
+                const building = new THREE.Mesh(new THREE.BoxGeometry(10, height, 10), buildingMat);
+                building.position.x = (Math.random() - 0.5) * 400 + 200;
+                building.position.z = (Math.random() - 0.5) * 400 + 200;
+                building.position.y = height / 2;
+                building.castShadow = true;
+                building.receiveShadow = true;
+                scene.add(building);
+                
+                const roof = new THREE.Mesh(new THREE.ConeGeometry(6, 3, 4), roofMat);
+                roof.position.x = building.position.x;
+                roof.position.y = height + 1.5;
+                roof.position.z = building.position.z;
+                roof.castShadow = true;
+                roof.receiveShadow = true;
+                scene.add(roof);
+                
+                buildings.push(building);
+            }
+        }
+        
+        function createTraffic() {
+            const carColors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
+            
+            for (let i = 0; i < 30; i++) {
+                const carGroup = new THREE.Group();
+                
+                // Car body
+                const body = new THREE.Mesh(new THREE.BoxGeometry(4, 1.5, 8), new THREE.MeshStandardMaterial({ color: carColors[Math.floor(Math.random() * carColors.length)] }));
+                body.position.y = 0.75;
+                body.castShadow = true;
+                body.receiveShadow = true;
+                carGroup.add(body);
+                
+                // Car roof
+                const roof = new THREE.Mesh(new THREE.BoxGeometry(2.5, 1, 4), new THREE.MeshStandardMaterial({ color: 0x333333 }));
+                roof.position.y = 1.5;
+                roof.position.z = -0.5;
+                roof.castShadow = true;
+                roof.receiveShadow = true;
+                carGroup.add(roof);
+                
+                // Wheels
+                const wheelGeo = new THREE.CylinderGeometry(0.8, 0.8, 1, 16);
+                const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+                
+                const positions = [
+                    [-1.5, 0.4, -2.5],
+                    [1.5, 0.4, -2.5],
+                    [-1.5, 0.4, 2.5],
+                    [1.5, 0.4, 2.5]
+                ];
+                
+                positions.forEach(pos => {
+                    const wheel = new THREE.Mesh(wheelGeo, wheelMat);
+                    wheel.rotation.z = Math.PI / 2;
+                    wheel.position.set(pos[0], pos[1], pos[2]);
+                    wheel.castShadow = true;
+                    wheel.receiveShadow = true;
+                    carGroup.add(wheel);
+                });
+                
+                carGroup.position.x = (Math.random() - 0.5) * 600;
+                carGroup.position.z = (Math.random() - 0.5) * 600;
+                carGroup.position.y = 0.4;
+                
+                carGroup.userData = {
+                    speed: (Math.random() * 0.5 + 0.5),
+                    direction: new THREE.Vector3(1, 0, 0)
+                };
+                
+                scene.add(carGroup);
+                trafficVehicles.push(carGroup);
+            }
+        }
+        
+        function createCheckpoints() {
+            const checkpointMat = new THREE.MeshStandardMaterial({ color: 0xffaa00, emissive: 0x442200 });
+            
+            for (let i = 0; i < 10; i++) {
+                const checkpoint = new THREE.Mesh(new THREE.TorusGeometry(5, 0.5, 16, 32), checkpointMat);
+                checkpoint.rotation.x = Math.PI / 2;
+                checkpoint.position.x = (Math.random() - 0.5) * 400;
+                checkpoint.position.z = (Math.random() - 0.5) * 400;
+                checkpoint.position.y = 2;
+                checkpoint.castShadow = true;
+                checkpoint.receiveShadow = true;
+                
+                // Add CSS label
+                const div = document.createElement('div');
+                div.textContent = '📍';
+                div.style.fontSize = '30px';
+                const label = new CSS2DObject(div);
+                label.position.set(0, 5, 0);
+                checkpoint.add(label);
+                
+                scene.add(checkpoint);
+                checkpoints.push(checkpoint);
+            }
+        }
+        
+        function createCoins() {
+            const coinMat = new THREE.MeshStandardMaterial({ color: 0xffd700, emissive: 0x442200 });
+            
+            for (let i = 0; i < 50; i++) {
+                const coin = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.2, 16), coinMat);
+                coin.rotation.x = Math.PI / 2;
+                coin.position.x = (Math.random() - 0.5) * 500;
+                coin.position.z = (Math.random() - 0.5) * 500;
+                coin.position.y = 0.5;
+                coin.castShadow = true;
+                coin.receiveShadow = true;
+                
+                scene.add(coin);
+                coins.push(coin);
+            }
+        }
+        
+        function createBike() {
+            bikeGroup = new THREE.Group();
+            
+            // Bike body
+            const bodyGeo = new THREE.BoxGeometry(1.5, 0.8, 3);
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0xff3300 });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.position.y = 0.4;
+            body.castShadow = true;
+            body.receiveShadow = true;
+            bikeGroup.add(body);
+            
+            // Seat
+            const seatGeo = new THREE.BoxGeometry(0.8, 0.3, 1);
+            const seatMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+            const seat = new THREE.Mesh(seatGeo, seatMat);
+            seat.position.set(0, 0.8, -0.5);
+            seat.castShadow = true;
+            seat.receiveShadow = true;
+            bikeGroup.add(seat);
+            
+            // Handlebar
+            const handleGeo = new THREE.CylinderGeometry(0.2, 0.2, 1.2);
+            const handleMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
+            const handle = new THREE.Mesh(handleGeo, handleMat);
+            handle.rotation.z = Math.PI / 2;
+            handle.position.set(0, 1, 1.2);
+            handle.castShadow = true;
+            handle.receiveShadow = true;
+            bikeGroup.add(handle);
+            
+            // Wheels
+            const wheelGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.4, 16);
+            const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+            
+            const frontWheel = new THREE.Mesh(wheelGeo, wheelMat);
+            frontWheel.rotation.z = Math.PI / 2;
+            frontWheel.position.set(0, 0.4, 1.3);
+            frontWheel.castShadow = true;
+            frontWheel.receiveShadow = true;
+            bikeGroup.add(frontWheel);
+            
+            const backWheel = new THREE.Mesh(wheelGeo, wheelMat);
+            backWheel.rotation.z = Math.PI / 2;
+            backWheel.position.set(0, 0.4, -1.3);
+            backWheel.castShadow = true;
+            backWheel.receiveShadow = true;
+            bikeGroup.add(backWheel);
+            
+            // Rider
+            const riderGroup = new THREE.Group();
+            
+            // Body
+            const torsoGeo = new THREE.CylinderGeometry(0.5, 0.5, 1);
+            const torsoMat = new THREE.MeshStandardMaterial({ color: 0x2244ff });
+            const torso = new THREE.Mesh(torsoGeo, torsoMat);
+            torso.position.y = 1.2;
+            torso.position.z = -0.2;
+            torso.castShadow = true;
+            torso.receiveShadow = true;
+            riderGroup.add(torso);
+            
+            // Head
+            const headGeo = new THREE.SphereGeometry(0.3);
+            const headMat = new THREE.MeshStandardMaterial({ color: 0xffccaa });
+            const head = new THREE.Mesh(headGeo, headMat);
+            head.position.y = 1.8;
+            head.position.z = -0.2;
+            head.castShadow = true;
+            head.receiveShadow = true;
+            riderGroup.add(head);
+            
+            // Helmet
+            const helmetGeo = new THREE.SphereGeometry(0.35);
+            const helmetMat = new THREE.MeshStandardMaterial({ color: 0xffaa00 });
+            const helmet = new THREE.Mesh(helmetGeo, helmetMat);
+            helmet.position.y = 1.85;
+            helmet.position.z = -0.15;
+            helmet.scale.set(1, 0.6, 1);
+            helmet.castShadow = true;
+            helmet.receiveShadow = true;
+            riderGroup.add(helmet);
+            
+            bikeGroup.add(riderGroup);
+            
+            bikeGroup.position.set(0, 0.5, 0);
+            bikeGroup.rotation.y = 0;
+            
+            scene.add(bikeGroup);
+        }
+        
+        // --- Input Handling ---
+        function onKeyDown(event) {
+            switch(event.code) {
+                case 'KeyW':
+                case 'ArrowUp':
+                    keyState.forward = true;
+                    break;
+                case 'KeyS':
+                case 'ArrowDown':
+                    keyState.backward = true;
+                    break;
+                case 'KeyA':
+                case 'ArrowLeft':
+                    keyState.left = true;
+                    break;
+                case 'KeyD':
+                case 'ArrowRight':
+                    keyState.right = true;
+                    break;
+                case 'Space':
+                    keyState.brake = true;
+                    break;
+                case 'KeyN':
+                    keyState.nitro = true;
+                    break;
+                case 'KeyC':
+                    toggleCamera();
+                    break;
+            }
+        }
+        
+        function onKeyUp(event) {
+            switch(event.code) {
+                case 'KeyW':
+                case 'ArrowUp':
+                    keyState.forward = false;
+                    break;
+                case 'KeyS':
+                case 'ArrowDown':
+                    keyState.backward = false;
+                    break;
+                case 'KeyA':
+                case 'ArrowLeft':
+                    keyState.left = false;
+                    break;
+                case 'KeyD':
+                case 'ArrowRight':
+                    keyState.right = false;
+                    break;
+                case 'Space':
+                    keyState.brake = false;
+                    break;
+                case 'KeyN':
+                    keyState.nitro = false;
+                    break;
+            }
+        }
+        
+        // Joystick functions
+        function startJoystick(e) {
+            e.preventDefault();
+            joystickActive = true;
+        }
+        
+        function moveJoystick(e) {
+            if (!joystickActive) return;
+            e.preventDefault();
+            
+            let clientX, clientY;
+            if (e.type === 'mousemove') {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            } else if (e.type === 'touchmove') {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            }
+            
+            const rect = joystickArea.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            let deltaX = clientX - centerX;
+            let deltaY = clientY - centerY;
+            
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const maxDistance = rect.width / 2;
+            
+            if (distance > maxDistance) {
+                deltaX = (deltaX / distance) * maxDistance;
+                deltaY = (deltaY / distance) * maxDistance;
+            }
+            
+            joystick.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+            
+            // Normalize to -1..1
+            joystickVector.x = deltaX / maxDistance;
+            joystickVector.y = deltaY / maxDistance;
+        }
+        
+        function stopJoystick(e) {
+            e.preventDefault();
+            joystickActive = false;
+            joystick.style.transform = 'translate(0px, 0px)';
+            joystickVector.set(0, 0);
+        }
+        
+        // --- Camera ---
+        function toggleCamera() {
+            gameState.cameraMode = (gameState.cameraMode + 1) % 3;
+        }
+        
+        function updateCamera() {
+            if (!bikeGroup) return;
+            
+            const camPos = cameraPositions[gameState.cameraMode];
+            
+            // Calculate camera position relative to bike
+            const bikePos = bikeGroup.position.clone();
+            const bikeRot = bikeGroup.rotation.y;
+            
+            // Transform camera offset by bike rotation
+            const offset = camPos.pos.clone();
+            offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), bikeRot);
+            
+            camera.position.copy(bikePos.clone().add(offset));
+            
+            // Look at point in front of bike
+            const lookAt = bikePos.clone().add(new THREE.Vector3(0, 1.5, 2).applyAxisAngle(new THREE.Vector3(0, 1, 0), bikeRot));
+            camera.lookAt(lookAt);
+        }
+        
+        // --- Game Loop ---
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (gameState.paused) return;
+            
+            const delta = clock.getDelta();
+            
+            // Update bike physics
+            updateBike(delta);
+            
+            // Update traffic
+            updateTraffic(delta);
+            
+            // Check collisions
+            checkCollisions();
+            
+            // Update UI
+            updateUI();
+            
+            // Update camera
+            updateCamera();
+            
+            // Render
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+        }
+        
+        function updateBike(delta) {
+            if (!bikeGroup) return;
+            
+            // Calculate speed based on input
+            let targetSpeed = 0;
+            
+            if (keyState.forward) {
+                targetSpeed = gameState.bike.speed * 30;
+            } else if (keyState.backward) {
+                targetSpeed = -gameState.bike.speed * 15;
+            }
+            
+            // Apply nitro
+            if (keyState.nitro && gameState.nitro > 0) {
+                targetSpeed *= 2;
+                gameState.nitro -= delta * 20;
+                if (gameState.nitro < 0) gameState.nitro = 0;
+            } else {
+                // Recharge nitro slowly
+                gameState.nitro += delta * 5;
+                if (gameState.nitro > gameState.maxNitro) gameState.nitro = gameState.maxNitro;
+            }
+            
+            // Apply brake
+            if (keyState.brake) {
+                targetSpeed *= 0.5;
+            }
+            
+            // Smooth acceleration
+            gameState.speed += (targetSpeed - gameState.speed) * delta * 2;
+            
+            // Move bike forward
+            const moveDelta = new THREE.Vector3(0, 0, gameState.speed * delta);
+            moveDelta.applyAxisAngle(new THREE.Vector3(0, 1, 0), bikeGroup.rotation.y);
+            bikeGroup.position.add(moveDelta);
+            
+            // Update distance
+            gameState.distance += Math.abs(gameState.speed) * delta / 1000; // km
+            
+            // Steering
+            if (keyState.left) {
+                bikeGroup.rotation.y += delta * gameState.bike.handling * (gameState.speed > 0 ? 1 : -1);
+            }
+            if (keyState.right) {
+                bikeGroup.rotation.y -= delta * gameState.bike.handling * (gameState.speed > 0 ? 1 : -1);
+            }
+            
+            // Apply joystick steering
+            if (joystickActive) {
+                bikeGroup.rotation.y -= joystickVector.x * delta * gameState.bike.handling * 2;
+            }
+            
+            // Simple suspension (bobbing effect)
+            bikeGroup.position.y = 0.5 + Math.sin(Date.now() * 0.01) * 0.05;
+            
+            // Keep within world bounds
+            bikeGroup.position.x = Math.max(-800, Math.min(800, bikeGroup.position.x));
+            bikeGroup.position.z = Math.max(-800, Math.min(800, bikeGroup.position.z));
+            
+            // Update speedometer
+            document.getElementById('speedometer').textContent = Math.round(Math.abs(gameState.speed) * 3.6) + ' km/h';
+            
+            // Update nitro bar
+            document.getElementById('nitro-bar').style.width = (gameState.nitro / gameState.maxNitro * 100) + '%';
+        }
+        
+        function updateTraffic(delta) {
+            trafficVehicles.forEach(car => {
+                // Simple AI movement
+                car.position.x += car.userData.direction.x * car.userData.speed * delta * 10;
+                car.position.z += car.userData.direction.z * car.userData.speed * delta * 10;
+                
+                // Wrap around
+                if (car.position.x > 800) car.position.x = -800;
+                if (car.position.x < -800) car.position.x = 800;
+                if (car.position.z > 800) car.position.z = -800;
+                if (car.position.z < -800) car.position.z = 800;
+            });
+        }
+        
+        function checkCollisions() {
+            if (!bikeGroup) return;
+            
+            // Check coin collisions
+            coins = coins.filter(coin => {
+                const dist = bikeGroup.position.distanceTo(coin.position);
+                if (dist < 2) {
+                    scene.remove(coin);
+                    gameState.coins += 10;
+                    document.getElementById('coin-counter').textContent = gameState.coins;
+                    return false;
+                }
+                return true;
+            });
+            
+            // Check checkpoint collisions
+            checkpoints.forEach(checkpoint => {
+                const dist = bikeGroup.position.distanceTo(checkpoint.position);
+                if (dist < 7) {
+                    // Mission progress
+                    gameState.missions[gameState.currentMission].progress++;
+                    updateMissionProgress();
+                    
+                    // Move checkpoint to new location
+                    checkpoint.position.x = (Math.random() - 0.5) * 400;
+                    checkpoint.position.z = (Math.random() - 0.5) * 400;
+                }
+            });
+            
+            // Check traffic collisions
+            trafficVehicles.forEach(car => {
+                const dist = bikeGroup.position.distanceTo(car.position);
+                if (dist < 3) {
+                    gameState.health -= 10;
+                    document.getElementById('health-bar').style.width = gameState.health + '%';
+                    
+                    // Push bike away
+                    const pushDir = bikeGroup.position.clone().sub(car.position).normalize();
+                    bikeGroup.position.add(pushDir.multiplyScalar(2));
+                    
+                    if (gameState.health <= 0) {
+                        resetBike();
+                    }
+                }
+            });
+        }
+        
+        function updateMissionProgress() {
+            const mission = gameState.missions[gameState.currentMission];
+            const progressPercent = (mission.progress / mission.maxProgress) * 100;
+            document.getElementById('mission-progress-bar').style.width = progressPercent + '%';
+            
+            if (mission.progress >= mission.maxProgress) {
+                completeMission();
+            }
+        }
+        
+        function completeMission() {
+            const mission = gameState.missions[gameState.currentMission];
+            gameState.coins += mission.reward;
+            gameState.xp += 100;
+            
+            if (gameState.xp >= gameState.maxXp) {
+                gameState.level++;
+                gameState.xp -= gameState.maxXp;
+                gameState.maxXp += 200;
+            }
+            
+            // Move to next mission
+            gameState.currentMission = (gameState.currentMission + 1) % gameState.missions.length;
+            resetMission();
+            
+            updateUI();
+        }
+        
+        function resetMission() {
+            const mission = gameState.missions[gameState.currentMission];
+            mission.progress = 0;
+            document.getElementById('mission-title').textContent = mission.title;
+            document.getElementById('mission-desc').textContent = mission.desc;
+            document.getElementById('mission-progress-bar').style.width = '0%';
+        }
+        
+        function resetBike() {
+            bikeGroup.position.set(0, 0.5, 0);
+            bikeGroup.rotation.y = 0;
+            gameState.health = gameState.maxHealth;
+            gameState.speed = 0;
+        }
+        
+        function updateUI() {
+            document.getElementById('coin-counter').textContent = gameState.coins;
+            document.getElementById('level-display').textContent = gameState.level;
+            document.getElementById('xp-display').textContent = gameState.xp + '/' + gameState.maxXp;
+            document.getElementById('distance-display').textContent = gameState.distance.toFixed(1) + ' km';
+            document.getElementById('health-bar').style.width = gameState.health + '%';
+        }
+        
+        // --- UI Functions ---
+        function togglePause() {
+            gameState.paused = !gameState.paused;
+            document.getElementById('pause-menu').style.display = gameState.paused ? 'block' : 'none';
+        }
+        
+        function openShop() {
+            gameState.paused = true;
+            document.getElementById('pause-menu').style.display = 'none';
+            document.getElementById('shop-menu').style.display = 'block';
+            document.getElementById('shop-coins').textContent = gameState.coins;
+            
+            const shopContent = document.getElementById('shop-content');
+            shopContent.innerHTML = `
+                <div class="upgrade-item">
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">Engine Speed</div>
+                        <div class="upgrade-desc">Increase max speed by 10%</div>
+                    </div>
+                    <div class="upgrade-price">200</div>
+                    <button class="buy-btn" onclick="buyUpgrade('speed')">BUY</button>
+                </div>
+                <div class="upgrade-item">
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">Braking Power</div>
+                        <div class="upgrade-desc">Improve brake efficiency by 15%</div>
+                    </div>
+                    <div class="upgrade-price">150</div>
+                    <button class="buy-btn" onclick="buyUpgrade('brake')">BUY</button>
+                </div>
+                <div class="upgrade-item">
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">Nitro Capacity</div>
+                        <div class="upgrade-desc">Increase nitro boost duration</div>
+                    </div>
+                    <div class="upgrade-price">300</div>
+                    <button class="buy-btn" onclick="buyUpgrade('nitro')">BUY</button>
+                </div>
+                <div class="upgrade-item">
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">Suspension</div>
+                        <div class="upgrade-desc">Better off-road handling</div>
+                    </div>
+                    <div class="upgrade-price">250</div>
+                    <button class="buy-btn" onclick="buyUpgrade('suspension')">BUY</button>
+                </div>
+                <div class="upgrade-item">
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">Handling</div>
+                        <div class="upgrade-desc">Tighter cornering</div>
+                    </div>
+                    <div class="upgrade-price">200</div>
+                    <button class="buy-btn" onclick="buyUpgrade('handling')">BUY</button>
+                </div>
+            `;
+        }
+        
+        window.buyUpgrade = function(upgradeType) {
+            const prices = { speed: 200, brake: 150, nitro: 300, suspension: 250, handling: 200 };
+            if (gameState.coins >= prices[upgradeType]) {
+                gameState.coins -= prices[upgradeType];
+                gameState.bike[upgradeType] += 0.2;
+                document.getElementById('shop-coins').textContent = gameState.coins;
+                document.getElementById('coin-counter').textContent = gameState.coins;
+            }
+        }
+        
+        function closeShop() {
+            gameState.paused = false;
+            document.getElementById('shop-menu').style.display = 'none';
+        }
+        
+        window.closeShop = closeShop;
+        
+        function saveGame() {
+            localStorage.setItem('bikeGameSave', JSON.stringify(gameState));
+            alert('Game saved!');
+        }
+        
+        function loadGame() {
+            const save = localStorage.getItem('bikeGameSave');
+            if (save) {
+                Object.assign(gameState, JSON.parse(save));
+                alert('Game loaded!');
+                updateUI();
+            }
+        }
+        
+        window.saveGame = saveGame;
+        window.loadGame = loadGame;
+        
+        function resumeGame() {
+            gameState.paused = false;
+            document.getElementById('pause-menu').style.display = 'none';
+        }
+        
+        window.resumeGame = resumeGame;
+        
+        function restartMission() {
+            resetMission();
+            resetBike();
+            gameState.paused = false;
+            document.getElementById('pause-menu').style.display = 'none';
+        }
+        
+        window.restartMission = restartMission;
+        
+        function toggleControls() {
+            gameState.controls = gameState.controls === 'touch' ? 'keyboard' : 'touch';
+            document.querySelector('#pause-menu .menu-btn:last-child').textContent = 
+                'Controls: ' + (gameState.controls === 'touch' ? 'Touch' : 'Keyboard');
+        }
+        
+        window.toggleControls = toggleControls;
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // Start the game
+        init();
+    </script>
+</body>
+</html>
