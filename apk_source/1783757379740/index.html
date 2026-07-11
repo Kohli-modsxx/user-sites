@@ -1,0 +1,213 @@
+ <!-- crack by 𝐫𝐚𝐣𝐨𝐮𝐭 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.85, maximum-scale=1.0, user-scalable=no">
+    <title>тнє LX ⚡ •VIP SERVER PRO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body { background: #000; font-family: 'Inter', sans-serif; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; overflow: hidden; position: relative; }
+        
+        /* Neon Lighting Border Effect */
+        body::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 4px solid #00ffff; box-shadow: inset 0 0 20px #00ffff, 0 0 20px #00ffff; pointer-events: none; z-index: 999; animation: pulseGlow 2s infinite alternate; }
+        @keyframes pulseGlow { 0% { opacity: 0.6; filter: hue-rotate(0deg); } 100% { opacity: 1; filter: hue-rotate(180deg); } }
+
+        /* Dashboard (Container) - Zoom Adjustment Ke Liye Max Width Manage Ki */
+        #ui { width: 100%; max-width: 380px; display: flex; flex-direction: column; height: 96vh; }
+        .logo { font-size: 34px; font-weight: 900; text-align: center; color: #00d2ff; text-shadow: 0 0 25px #00d2ff; margin-bottom: 10px; }
+        
+        /* Stats Dashboard Styling */
+        .stats-counter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; text-align: center; }
+        .stat-box { background: #080808; border: 1px solid #222; border-radius: 10px; padding: 6px; font-size: 11px; font-weight: bold; }
+        .stat-box div:last-child { font-size: 16px; font-weight: 900; margin-top: 2px; }
+        .c-win { color: #0f9; text-shadow: 0 0 5px #0f9; }
+        .c-loss { color: #f44; text-shadow: 0 0 5px #f44; }
+        .c-jk { color: #f3d078; text-shadow: 0 0 5px #f3d078; }
+
+        .period-card { background: #080808; padding: 15px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1a1a1a; margin-bottom: 10px; }
+        .p-val { font-size: 30px; font-weight: 900; }
+        .timer-val { font-size: 32px; font-weight: 900; color: #00FF00; text-shadow: 0 0 15px #00FF00; border-left: 2px solid #222; padding-left: 15px; }
+        .pred-card { background: linear-gradient(180deg, #f3d078 0%, #d4a742 100%); border-radius: 40px; min-height: 260px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #1a1100; border: 5px solid #fff; margin-bottom: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
+        .res-text { font-size: 95px; font-weight: 900; line-height: 1; letter-spacing: -5px; }
+        .num-container { display: flex; gap: 30px; margin-top: 20px; }
+        .num-ball { width: 80px; height: 80px; background: radial-gradient(circle at 30% 30%, #444, #000); border: 5px solid #f3d078; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 40px; color: #f3d078; font-weight: 900; box-shadow: 0 10px 20px rgba(0,0,0,0.8); }
+        .session-box { flex-grow: 1; background: #0a0a0a; border-radius: 25px; padding: 10px; border: 1px solid #1a1a1a; overflow-y: scroll; }
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 15px 5px; text-align: center; font-size: 16px; border-bottom: 1px solid #151515; font-weight: 800; }
+        th { color: #444; font-size: 11px; padding-bottom: 10px; text-transform: uppercase; }
+        .tag-win { color: #0f9; } .tag-loss { color: #f44; }
+        .tag-jackpot { background: #000; color: #f3d078; padding: 5px 12px; border-radius: 10px; font-size: 13px; font-weight: 900; border: 2px solid #f3d078; }
+    </style>
+</head>
+<body>
+
+<!-- Dashboard directly displayed - Login screen completely removed -->
+<div class="container" id="ui">
+    <div class="logo">⚡LX_PVT MODE⚡  </div>
+    
+    <div class="stats-counter">
+        <div class="stat-box"><div style="color:#aaa;">TOTAL WIN</div><div id="tw-count" class="c-win">0</div></div>
+        <div class="stat-box"><div style="color:#aaa;">TOTAL LOSS</div><div id="tl-count" class="c-loss">0</div></div>
+        <div class="stat-box"><div style="color:#aaa;">JACKPOT</div><div id="tj-count" class="c-jk">0</div></div>
+    </div>
+
+    <div class="period-card">
+        <div class="p-val" id="nextP">----</div>
+        <div class="timer-val" id="timer">00:00</div>
+    </div>
+    <div class="pred-card">
+        <div id="res" class="res-text">SCAN</div>
+        <div class="num-container">
+            <div class="num-ball" id="n1">?</div>
+            <div class="num-ball" id="n2" style="border-color:#fff; color:#fff;">?</div>
+        </div>
+    </div>
+    <div class="session-box">
+        <table>
+            <thead>
+                <tr><th>PERIOD</th><th>NUM</th><th>SIZE</th><th>STATUS</th></tr>
+            </thead>
+            <tbody id="session-h"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Firebase configuration (kept for potential future use, but no authentication required)
+    // The VIP key system has been completely bypassed - dashboard is freely accessible
+    
+    let totalWins = 0;
+    let totalLosses = 0;
+    let totalJackpots = 0;
+
+    // Text-to-speech function for result announcements
+    function aiSpeak(text) {
+        if ('speechSynthesis' in window) {
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 1.0; 
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    let sessionData = [];
+    let lastProcessed = "";
+    let currentActive = null;
+
+    // Timer and prediction engine initialization
+    function startDiversityEngine() {
+        // Update timer every second (countdown to next minute)
+        setInterval(() => {
+            const s = new Date().getSeconds();
+            const remaining = 60 - s;
+            const secondsStr = remaining.toString().padStart(2, '0');
+            document.getElementById('timer').innerText = `00:${secondsStr}`;
+        }, 1000);
+        
+        // Main prediction and result checking engine (runs every 1.5 seconds)
+        setInterval(enginePro, 1500); 
+    }
+
+    // Core engine: fetches latest draw results, updates predictions and statistics
+    async function enginePro() {
+        try {
+            const r = await fetch(`https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?t=${Date.now()}`);
+            const data = await r.json();
+            const list = data.data.list;
+            const latest = list[0];
+            const issue = latest.issueNumber;
+
+            // Process new result when issue changes (new draw available)
+            if (lastProcessed !== "" && lastProcessed !== issue) {
+                if (currentActive && currentActive.period === issue) {
+                    const n = parseInt(latest.number);
+                    const sz = n >= 5 ? "BIG" : "SMALL";
+                    let status = "";
+                    
+                    // Check if actual number matches any of the two predicted numbers (JACKPOT)
+                    if (n === currentActive.n1 || n === currentActive.n2) {
+                        status = '<span class="tag-jackpot">𝐉𝐀𝐂𝐊𝐏𝐎𝐓🎰</span>';
+                        totalJackpots++;
+                        document.getElementById('tj-count').innerText = totalJackpots;
+                        aiSpeak("Jackpot");
+                    } 
+                    // Check if size prediction (BIG/SMALL) was correct
+                    else if (sz === currentActive.size) {
+                        status = '<span class="tag-win">𝐖𝐈𝐍𝐍💯</span>';
+                        totalWins++;
+                        document.getElementById('tw-count').innerText = totalWins;
+                        aiSpeak("Win");
+                    } 
+                    // Prediction failed
+                    else {
+                        status = '<span class="tag-loss">𝐋𝐎𝐒𝐒🚫</span>';
+                        totalLosses++;
+                        document.getElementById('tl-count').innerText = totalLosses;
+                        aiSpeak("Loss");
+                    }
+
+                    // Add to session history (latest on top)
+                    sessionData.unshift({ p: issue.slice(-4), num: n, s: sz, res: status });
+                    updateTable();
+                }
+            }
+
+            // Generate prediction for next period
+            const nextP = (BigInt(issue) + 1n).toString();
+            if (!currentActive || currentActive.period !== nextP) {
+                const seed = parseInt(issue.slice(-3));
+                const history = list.slice(0, 10).map(x => parseInt(x.number));
+                let bigBias = history.filter(n => n >= 5).length;
+                
+                // Dynamic trend prediction logic based on seed parity and historical bias
+                let trend = (seed % 2 === 0) ? (bigBias >= 5 ? "BIG" : "SMALL") : (history[0] >= 5 ? "SMALL" : "BIG");
+
+                let n1, n2;
+                // Generate two prediction numbers based on trend
+                if(trend === "BIG") {
+                    n1 = [5, 6, 7, 8, 9][(seed + history[0]) % 5];
+                    n2 = [0, 1, 2, 3, 4][(seed * 3) % 5];
+                } else {
+                    n1 = [0, 1, 2, 3, 4][(seed + history[0]) % 5];
+                    n2 = [5, 6, 7, 8, 9][(seed * 7) % 5];
+                }
+
+                currentActive = { period: nextP, size: trend, n1: n1, n2: n2 };
+                document.getElementById('res').innerText = trend;
+                document.getElementById('n1').innerText = n1;
+                document.getElementById('n2').innerText = n2;
+                document.getElementById('nextP').innerText = nextP.slice(-4);
+            }
+            lastProcessed = issue;
+        } catch(e) {
+            // Silently handle network errors to keep UI responsive
+            console.warn("Engine fetch error:", e);
+        }
+    }
+
+    // Update the session history table with latest results
+    function updateTable() {
+        let h = "";
+        sessionData.forEach(i => {
+            h += `<tr>
+                    <td>${i.p}</td>
+                    <td>${i.num}</td>
+                    <td style="color:${i.s==='BIG'?'#f44':'#0f9'}">${i.s}</td>
+                    <td>${i.res}</td>
+                  </tr>`;
+        });
+        document.getElementById('session-h').innerHTML = h;
+    }
+
+    // Initialize dashboard immediately - no login verification required
+    startDiversityEngine();
+</script>
+</body>
+</html>
+
+ <!-- crack by @Hassan5888 -->
