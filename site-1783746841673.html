@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML to URL Converter ⚡</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: #f4f7f6; 
+            padding: 40px; 
+            text-align: center; 
+        }
+        .container { 
+            max-width: 650px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+        }
+        h2 { color: #24292f; margin-bottom: 5px; }
+        p { color: #57606a; font-size: 14px; margin-bottom: 20px; }
+        textarea { 
+            width: 100%; 
+            height: 250px; 
+            padding: 12px; 
+            border: 1px solid #d0d7de; 
+            border-radius: 6px; 
+            font-family: monospace; 
+            box-sizing: border-box; 
+            background: #f6f8fa;
+        }
+        button { 
+            background: #238636; 
+            color: white; 
+            border: none; 
+            padding: 12px 20px; 
+            font-size: 16px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            margin-top: 15px; 
+            width: 100%; 
+            font-weight: bold;
+        }
+        button:hover { background: #2ea043; }
+        #result { 
+            margin-top: 25px; 
+            padding: 15px;
+            border-radius: 6px;
+            word-break: break-all; 
+            font-weight: bold; 
+        }
+        .success { background: #dafbe1; color: #1a7f37; border: 1px solid #2da44e; }
+        .error { background: #ffebe9; color: #cf222e; border: 1px solid #ff8182; }
+        a { color: #0969da; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>⚡ HTML to URL Hoster</h2>
+    <p>Apna HTML code paste kariye aur direct GitHub Pages ka live URL khaiye.</p>
+    
+    <textarea id="htmlInput" placeholder="<h1>Mera Kamaal Ka Webpage!</h1>"></textarea>
+    <button onclick="deployDirectToGithub()">Host My Code Live 🚀</button>
+    
+    <div id="result" style="display: none;"></div>
+</div>
+
+<script>
+    // ⚠️ APNI DETAILS YAHAN BHARO
+    const GITHUB_TOKEN = "YOUR_GITHUB_TOKEN_HERE"; // Apna 'ghp_...' wala token yahan daalo
+    const GITHUB_USER = "YOUR_GITHUB_USERNAME";    // Apna GitHub username yahan daalo
+    const REPO_NAME = "YOUR_REPO_NAME";          // Apni repository ka naam yahan daalo
+
+    async function deployDirectToGithub() {
+        const htmlContent = document.getElementById('htmlInput').value;
+        const resultDiv = document.getElementById('result');
+        
+        if(!htmlContent.trim()) {
+            alert("Pehle textarea me kuch HTML code toh daalo bhei!");
+            return;
+        }
+
+        // UI Update
+        resultDiv.style.display = "block";
+        resultDiv.className = "";
+        resultDiv.innerHTML = "Uploading to GitHub... ⏳";
+
+        // Har upload ke liye ek unique file name (timestamp ke sath)
+        const fileName = `site-${Date.now()}.html`;
+
+        // GitHub API ke liye content ko Base64 me convert karna padta hai
+        // btoa() use karne se pehle UTF-8 safe encode karna zaroori hai
+        const utf8Bytes = new TextEncoder().encode(htmlContent);
+        let binary = '';
+        for (let i = 0; i < utf8Bytes.length; i++) {
+            binary += String.fromCharCode(utf8Bytes[i]);
+        }
+        const base64Content = btoa(binary);
+
+        const url = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/${fileName}`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.github+json'
+                },
+                body: JSON.stringify({
+                    message: `⚡ Web deploy: ${fileName}`,
+                    content: base64Content
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Sahi upload hone par GitHub Pages ka link dikhao
+                const liveUrl = `https://${GITHUB_USER}.github.io/${REPO_NAME}/${fileName}`;
+                resultDiv.className = "success";
+                resultDiv.innerHTML = `🎉 Badhai ho! Code live ho gaya hai:<br><br><a href="${liveUrl}" target="_blank">${liveUrl}</a>`;
+            } else {
+                // Agar GitHub API error de
+                resultDiv.className = "error";
+                resultDiv.innerHTML = `❌ Error: ${data.message || 'Kuch gadbad hui'}`;
+            }
+
+        } catch (err) {
+            resultDiv.className = "error";
+            resultDiv.innerHTML = "❌ Internet ya API connection me dikkat hai.";
+            console.error(err);
+        }
+    }
+</script>
+
+</body>
+</html>
