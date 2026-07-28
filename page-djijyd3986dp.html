@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protected Content</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        background: #0a0c12;
+        font-family: system-ui, -apple-system, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f0f4ff;
+    }
+    #loader {
+        text-align: center;
+        padding: 40px;
+    }
+    #loader .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(139, 92, 246, 0.1);
+        border-top: 3px solid #8b5cf6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    .secured-badge {
+        background: rgba(139, 92, 246, 0.1);
+        padding: 4px 14px;
+        border-radius: 60px;
+        font-size: 0.7rem;
+        color: #8b5cf6;
+        display: inline-block;
+        margin-top: 16px;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+</style>
+</head>
+<body>
+    <div id="loader">
+        <div class="spinner"></div>
+        <div>Loading secure content...</div>
+        <div class="secured-badge">🔒 Secured</div>
+    </div>
+    <div id="content" style="display:none;"></div>
+    <script>
+        (function() {
+            // Decode and render
+            const encoded = "PCFET0NUWVBFIGh0bWw+IDxodG1sIGxhbmc9ImVuIj4gPGhlYWQ+IDxtZXRhIGNoYXJzZXQ9IlVURi04IiAvPiA8bWV0YSBuYW1lPSJ2aWV3cG9ydCIgY29udGVudD0id2lkdGg9ZGV2aWNlLXdpZHRoLCBpbml0aWFsLXNjYWxlPTEuMCIgLz4gPHRpdGxlPlNoaW5vYnUgTWluaSBBcHA8L3RpdGxlPiA8bGluayByZWw9InN0eWxlc2hlZXQiIGhyZWY9Ii4vc3R5bGVzLmNzcyIgLz4gPHNjcmlwdCBzcmM9Imh0dHBzOi8vdGVsZWdyYW0ub3JnL2pzL3RlbGVncmFtLXdlYi1hcHAuanMiPjwvc2NyaXB0PiA8L2hlYWQ+IDxib2R5PiA8bWFpbiBjbGFzcz0iYXBwLXNoZWxsIj4gPGhlYWRlciBjbGFzcz0iaGVybyI+IDxkaXYgY2xhc3M9ImJhZGdlIj5TaGlub2J1PC9kaXY+IDxoMSBpZD0iYm90LW5hbWUiPlNoaW5vYnUgUm9ib3Q8L2gxPiA8cCBjbGFzcz0ic3VidGl0bGUiPlNoaW5vYnUgaXMgYSBwb3dlcmZ1bCBBSS10aGVtZWQgYWR2YW5jZWQgZ3JvdXAgbWFuYWdlbWVudCBib3Qgd2l0aCAxMDArIGNvbW1hbmRzLjwvcD4gPGRpdiBjbGFzcz0ic3RhdHMiIGlkPSJzdGF0cyI+IDxkaXYgY2xhc3M9InN0YXQtY2FyZCI+PHNwYW4gY2xhc3M9ImxhYmVsIj5Nb2R1bGVzPC9zcGFuPjxzcGFuIGlkPSJzdGF0LW1vZHVsZXMiPi08L3NwYW4+PC9kaXY+IDxkaXYgY2xhc3M9InN0YXQtY2FyZCI+PHNwYW4gY2xhc3M9ImxhYmVsIj5Db21tYW5kczwvc3Bhbj48c3BhbiBpZD0ic3RhdC1jb21tYW5kcyI+LTwvc3Bhbj48L2Rpdj4gPC9kaXY+IDxuYXYgY2xhc3M9InRhYnMiIGlkPSJ0YWJzIj4gPGJ1dHRvbiBjbGFzcz0idGFiIGlzLWFjdGl2ZSIgZGF0YS10YWI9ImFib3V0Ij5BYm91dDwvYnV0dG9uPiA8YnV0dG9uIGNsYXNzPSJ0YWIiIGRhdGEtdGFiPSJjb21tYW5kcyI+Q29tbWFuZHM8L2J1dHRvbj4gPGJ1dHRvbiBjbGFzcz0idGFiIiBkYXRhLXRhYj0iY3JlZGl0cyI+Q3JlZGl0czwvYnV0dG9uPiA8YnV0dG9uIGNsYXNzPSJ0YWIiIGRhdGEtdGFiPSJzdXBwb3J0Ij5TdXBwb3J0PC9idXR0b24+IDwvbmF2PiA8L2hlYWRlcj4gPHNlY3Rpb24gY2xhc3M9InBhbmVsIiBpZD0idGFiLWFib3V0Ij4gPGRpdiBjbGFzcz0icGFuZWwtaGVhZCI+IDxoMj5BYm91dDwvaDI+IDwvZGl2PiA8cCBpZD0iYWJvdXQtZGVzY3JpcHRpb24iPjwvcD4gPHVsIGlkPSJhYm91dC1mZWF0dXJlcyIgY2xhc3M9ImZlYXR1cmUtbGlzdCI+PC91bD4gPGRpdiBjbGFzcz0ibGlua3MiPiA8YSBjbGFzcz0iYnRuIiBpZD0iYWJvdXQtdXBkYXRlcyIgaHJlZj0iaHR0cHM6Ly90Lm1lL1NoaW5vYnVfVXBkYXRlX0NoYW5uZWwiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vcmVmZXJyZXIiPlVwZGF0ZXM8L2E+IDxhIGNsYXNzPSJidG4iIGlkPSJhYm91dC1zdXBwb3J0IiBocmVmPSJodHRwczovL3QubWUvU2hpbm9idV9TdXBwb3J0IiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJub3JlZmVycmVyIj5TdXBwb3J0PC9hPiA8L2Rpdj4gPC9zZWN0aW9uPiA8c2VjdGlvbiBjbGFzcz0icGFuZWwgaGlkZGVuIiBpZD0idGFiLWNvbW1hbmRzIj4gPGRpdiBjbGFzcz0icGFuZWwtaGVhZCI+IDxoMj5Db21tYW5kczwvaDI+IDxpbnB1dCBpZD0ic2VhcmNoIiB0eXBlPSJ0ZXh0IiBwbGFjZWhvbGRlcj0iU2VhcmNoIGNvbW1hbmQgZS5nLiAvYmFuIiAvPiA8L2Rpdj4gPHAgY2xhc3M9ImhpbnQiPlNob3dzIGNvbW1hbmRzIGFuZCB3aGF0IHRoZXkgYXJlIHVzZWQgZm9yLiBUYXAgY29tbWFuZCBjaGlwcyB0byBjb3B5LjwvcD4gPGRpdiBpZD0iY2F0YWxvZyIgY2xhc3M9ImNhdGFsb2ciPjwvZGl2PiA8cCBpZD0iZW1wdHkiIGNsYXNzPSJlbXB0eSBoaWRkZW4iPk5vIGNvbW1hbmRzIGZvdW5kIGZvciB5b3VyIHNlYXJjaC48L3A+IDwvc2VjdGlvbj4gPHNlY3Rpb24gY2xhc3M9InBhbmVsIGhpZGRlbiIgaWQ9InRhYi1jcmVkaXRzIj4gPGRpdiBjbGFzcz0icGFuZWwtaGVhZCI+IDxoMj5DcmVkaXRzPC9oMj4gPC9kaXY+IDxwPjxzdHJvbmc+T3duZXI6PC9zdHJvbmc+IDxzcGFuIGlkPSJjcmVkaXQtb3duZXIiPi08L3NwYW4+PC9wPiA8cD48c3Ryb25nPkRldmVsb3Blcjo8L3N0cm9uZz4gPHNwYW4gaWQ9ImNyZWRpdC1kZXZzIj4tPC9zcGFuPjwvcD4gPHAgaWQ9ImNyZWRpdC10aGFua3MiIGNsYXNzPSJoaW50Ij48L3A+IDwvc2VjdGlvbj4gPHNlY3Rpb24gY2xhc3M9InBhbmVsIGhpZGRlbiIgaWQ9InRhYi1zdXBwb3J0Ij4gPGRpdiBjbGFzcz0icGFuZWwtaGVhZCI+IDxoMj5TdXBwb3J0PC9oMj4gPC9kaXY+IDxwIGlkPSJzdXBwb3J0LW1lc3NhZ2UiPjwvcD4gPGRpdiBjbGFzcz0ibGlua3MiPiA8YSBjbGFzcz0iYnRuIiBpZD0ic3VwcG9ydC1jaGF0LWxpbmsiIGhyZWY9Imh0dHBzOi8vdC5tZS9TaGlub2J1X1N1cHBvcnQiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vcmVmZXJyZXIiPlN1cHBvcnQgQ2hhdDwvYT4gPGEgY2xhc3M9ImJ0biIgaWQ9InN1cHBvcnQtdXBkYXRlcy1saW5rIiBocmVmPSJodHRwczovL3QubWUvU2hpbm9idV9VcGRhdGVfQ2hhbm5lbCIgdGFyZ2V0PSJfYmxhbmsiIHJlbD0ibm9yZWZlcnJlciI+VXBkYXRlcyBDaGFubmVsPC9hPiA8L2Rpdj4gPC9zZWN0aW9uPiA8L21haW4+IDxzY3JpcHQgc3JjPSIuL2FwcC5qcyI+PC9zY3JpcHQ+IDwvYm9keT4gPC9odG1sPg==";
+            const decoded = atob(encoded);
+            
+            // Security check: prevent viewing source via keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Block F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+                if (e.key === 'F12' || 
+                    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
+                    (e.ctrlKey && e.key === 'u')) {
+                    e.preventDefault();
+                    return false;
+                }
+                // Block Ctrl+S, Ctrl+C
+                if (e.ctrlKey && (e.key === 's' || e.key === 'c')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Block right-click
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Block selection
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Block copy
+            document.addEventListener('copy', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Render content
+            const container = document.getElementById('content');
+            container.innerHTML = decoded;
+            container.style.display = 'block';
+            document.getElementById('loader').style.display = 'none';
+
+            // Additional protection: disable dev tools detection
+            const devtools = /./;
+            devtools.toString = function() {
+                document.getElementById('loader').style.display = 'block';
+                document.getElementById('content').style.display = 'none';
+                return '';
+            };
+            console.log('%c🔒 Protected Content', 'color: #8b5cf6; font-size: 20px; font-weight: bold;');
+            console.log('%cSource code is not accessible', 'color: #64748b;');
+        })();
+    </script>
+</body>
+</html>
