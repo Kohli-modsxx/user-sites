@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>URL to APK Generator</title>
+
+<style>
+body{
+    margin:0;
+    background:#0f172a;
+    font-family:Arial,sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.box{
+    width:350px;
+    background:#fff;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+
+h2{
+    text-align:center;
+    color:#2563eb;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:8px;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:#2563eb;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#1d4ed8;
+}
+
+#output{
+    margin-top:20px;
+    text-align:center;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>URL → APK Generator</h2>
+
+<input type="text" id="name" placeholder="App Name">
+
+<input type="url" id="url" placeholder="https://example.com">
+
+<button onclick="generate()">Generate APK</button>
+
+<div id="output"></div>
+
+</div>
+
+<script>
+function generate(){
+
+let app=document.getElementById("name").value.trim();
+let url=document.getElementById("url").value.trim();
+
+if(app=="" || url==""){
+alert("Please fill all fields.");
+return;
+}
+
+document.getElementById("output").innerHTML=`
+<h3>${app}</h3>
+<p><b>Website:</b><br>${url}</p>
+
+<p style="color:green;">✓ Ready for APK Build</p>
+
+<button onclick="downloadAPK()">Download APK</button>
+`;
+}
+
+function downloadAPK(){
+alert("HTML alone cannot generate an Android APK.\n\nTo create a real APK, you need a backend with the Android SDK and Gradle.");
+}
+</script>
+
+</body>
+</html>
