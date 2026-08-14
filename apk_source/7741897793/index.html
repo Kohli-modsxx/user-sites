@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PR • M☢Dຮ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --hacker-green: #ff0044;
+            --hacker-cyan: #ff00aa;
+            --hacker-magenta: #ff00aa;
+            --hacker-red: #ff0044;
+            --hacker-glow: rgba(255, 0, 68, 0.6);
+            --matrix-glow: rgba(255, 0, 170, 0.5);
+            --dark-bg: #0a0a0a;
+            --terminal-bg: #0d0d0d;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent !important;
+            overflow: hidden !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        @keyframes glitchText {
+            0%, 90%, 100% { transform: translate(0); opacity: 1; text-shadow: 0 0 10px #ff0044, 0 0 20px #ff0044; }
+            92% { transform: translate(-3px, 2px) skewX(-5deg); opacity: 0.8; text-shadow: 0 0 30px #ff00aa, 0 0 60px #ff00aa; }
+            94% { transform: translate(3px, -2px) skewX(5deg); opacity: 0.9; text-shadow: 0 0 30px #ff0044, 0 0 60px #ff0044; }
+            96% { transform: translate(-2px, 1px); opacity: 1; }
+        }
+        @keyframes matrixRain {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 0% 100%; }
+        }
+        @keyframes scanline {
+            0% { top: -10%; }
+            100% { top: 110%; }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 68, 0.6), 0 0 20px rgba(255, 0, 68, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(255, 0, 68, 0.6), 0 0 60px rgba(255, 0, 170, 0.5), 0 0 90px rgba(255, 0, 170, 0.5); }
+        }
+        @keyframes terminalBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        @keyframes spinHack {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        @keyframes hackFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
+        }
+        @keyframes binaryFlow {
+            0% { transform: translateY(-100%) scaleY(0.5); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(100%) scaleY(1); opacity: 0; }
+        }
+        @keyframes wingPulse {
+            0%, 100% { filter: drop-shadow(0 0 20px #ff0044) drop-shadow(0 0 40px #ff00aa); }
+            50% { filter: drop-shadow(0 0 40px #ff00aa) drop-shadow(0 0 80px #ff0044); }
+        }
+
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.08;
+            background: repeating-linear-gradient(0deg, 
+                transparent 0px, 
+                transparent 20px,
+                rgba(255, 0, 68, 0.03) 20px,
+                rgba(255, 0, 68, 0.03) 21px
+            );
+            animation: matrixRain 20s linear infinite;
+        }
+        #matrix-bg::before {
+            content: '01001110 01001000 01000001 01000011 01001011 01000101 01010010 00100000 01001101 01001111 01000100 01000101 00100000 01000001 01000011 01010100 01001001 01010110 01000001 01010100 01000101 01000100 00100000 01010011 01011001 01010011 01010100 01000101 01001101';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: #ff0044;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 8px;
+            line-height: 30px;
+            word-break: break-all;
+            white-space: pre-wrap;
+            opacity: 0.15;
+            animation: binaryFlow 30s linear infinite;
+        }
+
+        #main-wrapper {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: hackFloat 3s ease-in-out infinite;
+            z-index: 10;
+            width: 380px;
+            height: 300px;
+            cursor: grab;
+            touch-action: none;
+        }
+        #main-wrapper:active {
+            cursor: grabbing;
+        }
+
+        .hack-wing {
+            position: absolute;
+            top: 46%;
+            width: 70px;
+            height: 100px;
+            z-index: 1;
+            opacity: 0.9;
+            animation: wingPulse 1.5s ease-in-out infinite;
+        }
+        .wing-left {
+            right: 50%;
+            margin-right: 120px;
+            transform-origin: right center;
+            animation: flapLeft 0.8s infinite alternate ease-in-out;
+        }
+        .wing-left .wing-circuit {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(255, 0, 68, 0.1) 20%,
+                rgba(255, 0, 68, 0.3) 40%,
+                rgba(255, 0, 170, 0.2) 60%,
+                rgba(255, 0, 170, 0.15) 80%,
+                transparent 100%
+            );
+            border: 1px solid #ff0044;
+            clip-path: polygon(100% 0%, 80% 5%, 20% 25%, 0% 50%, 25% 65%, 5% 85%, 40% 92%, 30% 100%, 100% 80%);
+            position: relative;
+            box-shadow: inset 0 0 60px rgba(255, 0, 68, 0.1);
+        }
+        .wing-left .wing-circuit::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 20%;
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, #ff0044, #ff00aa);
+            box-shadow: 0 0 15px #ff0044;
+            animation: binaryFlow 2s linear infinite;
+        }
+        .wing-left .wing-circuit::after {
+            content: '';
+            position: absolute;
+            bottom: 20%;
+            left: 10%;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, #ff00aa, #ff0044);
+            box-shadow: 0 0 15px #ff00aa;
+            animation: binaryFlow 2.5s linear infinite reverse;
+        }
+        .wing-left .node {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #ff0044;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #ff0044;
+            animation: terminalBlink 1s infinite;
+        }
+        .wing-left .node:nth-child(1) { top: 20%; left: 30%; }
+        .wing-left .node:nth-child(2) { top: 45%; left: 15%; animation-delay: 0.3s; }
+        .wing-left .node:nth-child(3) { top: 70%; left: 25%; animation-delay: 0.6s; }
+        .wing-left .node:nth-child(4) { top: 35%; right: 15%; animation-delay: 0.9s; background: #ff00aa; box-shadow: 0 0 20px #ff00aa; }
+
+        .wing-right {
+            left: 50%;
+            margin-left: 120px;
+            transform-origin: left center;
+            animation: flapRight 0.8s infinite alternate ease-in-out;
+        }
+        .wing-right .wing-circuit {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(255, 0, 68, 0.1) 20%,
+                rgba(255, 0, 170, 0.2) 40%,
+                rgba(255, 0, 68, 0.3) 60%,
+                rgba(255, 0, 170, 0.15) 80%,
+                transparent 100%
+            );
+            border: 1px solid #ff0044;
+            clip-path: polygon(0% 0%, 20% 5%, 80% 25%, 100% 50%, 75% 65%, 95% 85%, 60% 92%, 70% 100%, 0% 80%);
+            position: relative;
+            box-shadow: inset 0 0 60px rgba(255, 0, 68, 0.1);
+        }
+        .wing-right .wing-circuit::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            right: 20%;
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(270deg, #ff0044, #ff00aa);
+            box-shadow: 0 0 15px #ff0044;
+            animation: binaryFlow 2.2s linear infinite;
+        }
+        .wing-right .wing-circuit::after {
+            content: '';
+            position: absolute;
+            bottom: 25%;
+            right: 10%;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(270deg, #ff00aa, #ff0044);
+            box-shadow: 0 0 15px #ff00aa;
+            animation: binaryFlow 2.8s linear infinite reverse;
+        }
+        .wing-right .node {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #ff0044;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #ff0044;
+            animation: terminalBlink 1s infinite;
+        }
+        .wing-right .node:nth-child(1) { top: 20%; right: 30%; }
+        .wing-right .node:nth-child(2) { top: 45%; right: 15%; animation-delay: 0.3s; background: #ff00aa; box-shadow: 0 0 20px #ff00aa; }
+        .wing-right .node:nth-child(3) { top: 70%; right: 25%; animation-delay: 0.6s; }
+        .wing-right .node:nth-child(4) { top: 35%; left: 15%; animation-delay: 0.9s; background: #ff00aa; box-shadow: 0 0 20px #ff00aa; }
+
+        @keyframes flapLeft {
+            0% { transform: translateY(-50%) scale(0.85) rotateY(0deg); }
+            100% { transform: translateY(-50%) rotateY(60deg) scale(1.15); }
+        }
+        @keyframes flapRight {
+            0% { transform: translateY(-50%) scale(0.85) rotateY(0deg); }
+            100% { transform: translateY(-50%) rotateY(-60deg) scale(1.15); }
+        }
+
+        .wing-binary {
+            position: absolute;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 6px;
+            color: #ff0044;
+            opacity: 0.4;
+            animation: binaryFlow 3s linear infinite;
+            pointer-events: none;
+        }
+        .wing-left .wing-binary:nth-child(2) { top: 15%; left: 10%; animation-delay: 0.5s; }
+        .wing-left .wing-binary:nth-child(3) { top: 55%; left: 5%; animation-delay: 1s; }
+        .wing-left .wing-binary:nth-child(4) { bottom: 10%; left: 20%; animation-delay: 1.5s; }
+        .wing-right .wing-binary:nth-child(2) { top: 15%; right: 10%; animation-delay: 0.5s; }
+        .wing-right .wing-binary:nth-child(3) { top: 55%; right: 5%; animation-delay: 1s; }
+        .wing-right .wing-binary:nth-child(4) { bottom: 10%; right: 20%; animation-delay: 1.5s; }
+
+        #main {
+            width: 240px;
+            height: 260px;
+            background: var(--terminal-bg);
+            border: 2px solid #ff0044;
+            border-radius: 8px;
+            display: none;
+            flex-direction: column;
+            gap: 3px;
+            position: relative;
+            padding: 10px;
+            animation: pulseGlow 2s infinite;
+            z-index: 10;
+            box-shadow: inset 0 0 60px rgba(255, 0, 68, 0.05), 0 0 50px rgba(255, 0, 68, 0.1);
+        }
+        #main::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff0044, #ff00aa, #ff0044, transparent);
+            animation: scanline 3s linear infinite;
+        }
+
+        .scanline-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            pointer-events: none;
+            z-index: 0;
+            background: repeating-linear-gradient(0deg, 
+                transparent 0px, 
+                transparent 3px,
+                rgba(255, 0, 68, 0.02) 3px,
+                rgba(255, 0, 68, 0.02) 4px
+            );
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            z-index: 3;
+            border-bottom: 1px solid rgba(255, 0, 68, 0.3);
+            padding-bottom: 4px;
+        }
+        .title-text {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 6px;
+            color: #ff0044;
+            text-shadow: 0 0 15px rgba(255, 0, 68, 0.6);
+            animation: glitchText 3s infinite;
+            letter-spacing: 0px;
+            line-height: 1.2;
+        }
+        .title-text::before {
+            content: '> ';
+            color: #ff00aa;
+        }
+        .close-btn {
+            color: #ff0044;
+            font-size: 14px;
+            cursor: pointer;
+            background: rgba(0,0,0,0.8);
+            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ff0044;
+            font-family: 'Press Start 2P', monospace;
+            transition: 0.2s;
+            text-shadow: 0 0 20px #ff0044;
+            z-index: 30;
+            position: relative;
+        }
+        .close-btn:hover {
+            background: rgba(255, 0, 68, 0.2);
+            box-shadow: 0 0 30px #ff0044;
+        }
+
+        .sys-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 0, 68, 0.04);
+            border: 1px solid rgba(255, 0, 68, 0.15);
+            border-radius: 4px;
+            padding: 3px 6px;
+            color: #ff0044;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 7px;
+            font-weight: 400;
+            z-index: 2;
+            text-shadow: 0 0 10px rgba(255, 0, 68, 0.2);
+        }
+        .live-dot {
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            background-color: #ff0044;
+            border-radius: 50%;
+            animation: pulseRadar 0.5s infinite;
+            margin-right: 4px;
+            box-shadow: 0 0 15px #ff0044;
+        }
+        @keyframes pulseRadar {
+            0%, 100% { opacity: 1; transform: scale(1); background-color: #ff0044; }
+            50% { opacity: 0.2; transform: scale(1.5); background-color: #ff00aa; }
+        }
+
+        #content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 2;
+            width: 100%;
+        }
+        .ai-result-box {
+            width: 100%;
+            flex: 1;
+            border: 1px solid rgba(255, 0, 68, 0.2);
+            border-radius: 4px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background: rgba(0, 0, 0, 0.85);
+            position: relative;
+            overflow: hidden;
+        }
+        .ai-result-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, 
+                transparent 0px, 
+                transparent 2px,
+                rgba(255, 0, 68, 0.02) 2px,
+                rgba(255, 0, 68, 0.02) 4px
+            );
+            pointer-events: none;
+        }
+
+        .hack-badge {
+            width: 44px;
+            height: 44px;
+            border-radius: 4px;
+            border: 1.5px solid #ff0044;
+            background: radial-gradient(circle at 30%, #0a0a0a, #000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(255, 0, 68, 0.6), inset 0 0 30px rgba(255, 0, 68, 0.05);
+            animation: pulseGlow 1.5s infinite;
+            position: relative;
+        }
+        .hack-badge::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            border-radius: 4px;
+            border: 1px solid transparent;
+            border-top: 1px solid #ff00aa;
+            border-bottom: 1px solid #ff0044;
+            animation: spinHack 2s linear infinite;
+        }
+        .hack-eagle {
+            width: 65%;
+            height: 65%;
+            fill: #ff0044;
+            filter: drop-shadow(0 0 15px rgba(255, 0, 68, 0.6));
+        }
+
+        .text-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+        .status-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 7px;
+            color: #ff00aa;
+            text-shadow: 0 0 20px rgba(255, 0, 170, 0.3);
+            letter-spacing: 1px;
+        }
+        .status-title::before {
+            content: '# ';
+            color: #ff0044;
+        }
+        .status-sub {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 8px;
+            font-weight: 400;
+            color: #ff0044;
+            text-shadow: 0 0 15px rgba(255, 0, 68, 0.6);
+            letter-spacing: 2px;
+        }
+        .status-desc {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 7px;
+            font-weight: 300;
+            color: rgba(255, 0, 68, 0.6);
+            letter-spacing: 1px;
+        }
+
+        .buttons-area {
+            display: flex;
+            gap: 5px;
+            width: 100%;
+            margin-top: 2px;
+            z-index: 5;
+            position: relative;
+        }
+        .btn {
+            flex: 1;
+            padding: 6px 0;
+            border-radius: 4px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 6px;
+            font-weight: 400;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: 1px solid #ff0044;
+            background: transparent;
+            color: #ff0044;
+            text-shadow: 0 0 20px rgba(255, 0, 68, 0.6);
+            transition: 0.2s;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 10;
+        }
+        .btn-action {
+            background: rgba(255, 0, 68, 0.08);
+            box-shadow: 0 0 30px rgba(255, 0, 68, 0.05);
+            border-color: #ff0044;
+        }
+        .btn-action:hover {
+            background: rgba(255, 0, 68, 0.15);
+            box-shadow: 0 0 50px rgba(255, 0, 68, 0.6);
+        }
+        .btn:active { transform: scale(0.95); }
+
+        .progress-bar {
+            width: 80%;
+            height: 4px;
+            background: rgba(255, 0, 68, 0.05);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 3px;
+            border: 1px solid rgba(255, 0, 68, 0.1);
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0044, #ff00aa, #ff0044);
+            animation: progressMove 0.8s linear infinite;
+            transition: width 0.07s linear;
+            border-radius: 2px;
+        }
+        @keyframes progressMove {
+            0% { background-position: 0% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .ai-result-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(0,0,0,0.8);
+            padding: 4px 14px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 0, 68, 0.2);
+            width: 100%;
+        }
+        .text-result {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 20px;
+            font-weight: 400;
+            letter-spacing: 3px;
+            color: #ff0044;
+            text-shadow: 0 0 30px rgba(255, 0, 68, 0.6), 0 0 60px rgba(255, 0, 170, 0.5);
+            min-width: 70px;
+            text-align: center;
+            animation: glitchText 2s infinite;
+        }
+        .number-box {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(145deg, #0a0a0a, #000);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid #ff0044;
+            box-shadow: 0 0 30px rgba(255, 0, 68, 0.6), inset 0 0 30px rgba(255, 0, 68, 0.03);
+            position: relative;
+        }
+        .number-box::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            border-radius: 4px;
+            border: 1px solid transparent;
+            border-top: 1px solid #ff00aa;
+            border-right: 1px solid #ff0044;
+            animation: spinHack 1.5s linear infinite;
+        }
+        .number-display {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 28px;
+            font-weight: 400;
+            color: #ff0044;
+            text-shadow: 0 0 30px rgba(255, 0, 68, 0.6), 0 0 60px rgba(255, 0, 170, 0.5);
+            animation: glitchText 1.5s infinite;
+        }
+
+        .period-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 4px;
+        }
+        .glass-period-box {
+            background: rgba(255, 0, 68, 0.04);
+            border: 1px solid rgba(255, 0, 68, 0.15);
+            border-radius: 4px;
+            padding: 3px 12px;
+            color: #ff00aa;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 7px;
+            text-shadow: 0 0 20px rgba(255, 0, 170, 0.2);
+        }
+        .glass-period-box::before {
+            content: '> ';
+            color: #ff0044;
+        }
+
+        #mini {
+            width: 60px;
+            height: 60px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            background: radial-gradient(circle at 40% 30%, #0a0a0a, #000);
+            z-index: 15;
+            box-shadow: 0 0 40px rgba(255, 0, 68, 0.6), 0 0 80px rgba(255, 0, 68, 0.1);
+            border: 1.5px solid #ff0044;
+            transition: 0.2s;
+        }
+        #mini:hover {
+            box-shadow: 0 0 60px rgba(255, 0, 68, 0.6), 0 0 100px rgba(255, 0, 170, 0.15);
+        }
+        .hack-ring-1 {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 1.5px solid transparent;
+            border-top: 1.5px solid #ff0044;
+            border-bottom: 1.5px solid #ff00aa;
+            border-radius: 4px;
+            animation: spinHack 1.2s linear infinite;
+        }
+        .hack-ring-2 {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 1px dashed rgba(255, 0, 68, 0.3);
+            border-radius: 4px;
+            animation: spinHack 2s linear infinite reverse;
+        }
+        #mini .mini-hack-eagle {
+            width: 65%;
+            height: 65%;
+            fill: #ff0044;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 68, 0.6));
+        }
+        #mini::before {
+            content: '>';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
+            color: #ff00aa;
+            animation: terminalBlink 0.8s infinite;
+        }
+        #mini:active { transform: scale(0.9); }
+
+        .hack-loading {
+            position: absolute;
+            width: 56px;
+            height: 56px;
+            border: 1.5px solid transparent;
+            border-top: 1.5px solid #ff00aa;
+            border-bottom: 1.5px solid #ff0044;
+            border-radius: 4px;
+            animation: spinHack 0.5s linear infinite;
+        }
+
+        .glitch-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg, 
+                transparent 0px,
+                transparent 2px,
+                rgba(255, 0, 68, 0.02) 2px,
+                rgba(255, 0, 68, 0.02) 3px
+            );
+            animation: scanline 4s linear infinite;
+        }
+
+        .drag-handle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20;
+            cursor: grab;
+            touch-action: none;
+            pointer-events: none;
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body>
+    <div id="matrix-bg"></div>
+    
+    <div id="mini" onclick="openM()">
+        <div class="hack-ring-1"></div>
+        <div class="hack-ring-2"></div>
+        <svg class="mini-hack-eagle" viewBox="0 0 24 24">
+            <path d="M12 2C11.5 3.3 10.1 4.5 8.5 5C7.2 5.4 5.2 4.8 4 4C4.5 6 5.5 8.5 7.5 9.5C6 10 4 9.5 2.5 8.5C3.5 11.5 6 13.5 9 14C7 14.5 5 14.2 3.5 13.5C5.5 16.5 8.5 17.5 11.5 17.2C10.5 18 9 19 7 19C9.5 20.5 12.5 20.2 15 19C13 19 11.5 18 10.5 17.2C13.5 17.5 16.5 16.5 18.5 13.5C17 14.2 15 14.5 13 14C16 13.5 18.5 11.5 19.5 8.5C18 9.5 16 10 14.5 9.5C16.5 8.5 17.5 6 18 4C16.8 4.8 14.8 5.4 13.5 5C11.9 4.5 10.5 3.3 12 2Z"></path>
+        </svg>
+    </div>
+
+    <div id="main-wrapper" style="display:none;">
+        <div class="drag-handle" id="dragHandle"></div>
+        
+        <div class="hack-wing wing-left">
+            <div class="wing-circuit">
+                <span class="node"></span>
+                <span class="node"></span>
+                <span class="node"></span>
+                <span class="node"></span>
+            </div>
+            <span class="wing-binary">101</span>
+            <span class="wing-binary">010</span>
+            <span class="wing-binary">110</span>
+        </div>
+        
+        <div class="hack-wing wing-right">
+            <div class="wing-circuit">
+                <span class="node"></span>
+                <span class="node"></span>
+                <span class="node"></span>
+                <span class="node"></span>
+            </div>
+            <span class="wing-binary">011</span>
+            <span class="wing-binary">100</span>
+            <span class="wing-binary">001</span>
+        </div>
+
+        <div id="main">
+            <div class="scanline-overlay"></div>
+            <div class="header">
+                <div class="title-text">༺PR 乂꧁༒☬฿۝$$☬༒꧂<br>M☢Dຮ</div>
+                <div class="close-btn" onclick="closeM()">✕</div>
+            </div>
+            <div class="sys-bar">
+                <div style="display:flex;">
+                    <span class="live-dot"></span>ROOT ACCESS
+                </div>
+                <div>v9.0-EXPLOIT</div>
+                <div id="ping-text">9MS</div>
+            </div>
+            <div id="content"></div>
+        </div>
+    </div>
+
+    <div id="_0xf3ef2862">
+        <span class="wm-l">
+            <span class="wm-dot"></span>KXM Protected · @KohliHtmlToolBot
+        </span>
+        <span class="wm-r">@xxLEGEND_KOHLI | https://t.me/+4t2T50i_ewM2NDY1</span>
+    </div>
+
+    <script>
+        (function(){
+            // ========== DRAG FUNCTIONALITY ==========
+            const wrapper = document.getElementById('main-wrapper');
+            const dragHandle = document.getElementById('dragHandle');
+            let isDragging = false;
+            let offsetX = 0, offsetY = 0;
+
+            function startDrag(e) {
+                if (e.target.closest('.close-btn') || e.target.closest('.btn')) {
+                    return;
+                }
+                isDragging = true;
+                const touch = e.touches ? e.touches[0] : e;
+                const rect = wrapper.getBoundingClientRect();
+                offsetX = touch.clientX - rect.left;
+                offsetY = touch.clientY - rect.top;
+                wrapper.style.animation = 'none';
+                e.preventDefault();
+            }
+
+            function moveDrag(e) {
+                if (!isDragging) return;
+                const touch = e.touches ? e.touches[0] : e;
+                let x = touch.clientX - offsetX;
+                let y = touch.clientY - offsetY;
+                
+                const wrapperRect = wrapper.getBoundingClientRect();
+                const maxX = window.innerWidth - wrapperRect.width;
+                const maxY = window.innerHeight - wrapperRect.height;
+                x = Math.max(0, Math.min(x, maxX));
+                y = Math.max(0, Math.min(y, maxY));
+                
+                wrapper.style.left = x + 'px';
+                wrapper.style.top = y + 'px';
+                wrapper.style.transform = 'none';
+                e.preventDefault();
+            }
+
+            function endDrag() {
+                isDragging = false;
+            }
+
+            wrapper.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', moveDrag);
+            document.addEventListener('mouseup', endDrag);
+            wrapper.addEventListener('touchstart', startDrag, { passive: false });
+            document.addEventListener('touchmove', moveDrag, { passive: false });
+            document.addEventListener('touchend', endDrag);
+
+            // ========== REAL PREDICTION ENGINE ==========
+            let balance = '0.00';
+            let state = 'waiting';
+            let isScanning = false;
+            let currentResultSz = 'BIG';
+            let currentResultNum = '5';
+            let currentPeriod = null;
+            let isOpen = false;
+            let progressInterval = null;
+            let lockedPrediction = null;
+
+            let predictionHistory = [];      
+            let consecutivePattern = { big: 0, small: 0 };
+            let predictionAccuracy = 0;
+
+            function getPeriod() {
+                let d = new Date();
+                let utc = new Date(d.toLocaleString('en-US', {timeZone: 'UTC'}));
+                utc.setMinutes(utc.getMinutes() + 330);
+                let total = utc.getUTCHours() * 60 + utc.getUTCMinutes();
+                let periodSuffix = String(10001 + total);
+                return periodSuffix.slice(-5);
+            }
+
+            function generateRealPrediction() {
+                let predictedSz = 'BIG';
+                let predictedNum = 5;
+                
+                if (predictionHistory.length >= 3) {
+                    let lastThree = predictionHistory.slice(-3);
+                    let lastThreeBig = lastThree.filter(r => r.sz === 'BIG').length;
+                    let lastThreeSmall = lastThree.filter(r => r.sz === 'SMALL').length;
+                    
+                    if (lastThreeBig === 3) {
+                        predictedSz = 'SMALL';
+                    } else if (lastThreeSmall === 3) {
+                        predictedSz = 'BIG';
+                    } else {
+                        let alternating = true;
+                        for (let i = 1; i < lastThree.length; i++) {
+                            if (lastThree[i].sz === lastThree[i-1].sz) alternating = false;
+                        }
+                        if (alternating) {
+                            predictedSz = lastThree[lastThree.length-1].sz === 'BIG' ? 'SMALL' : 'BIG';
+                        } else {
+                            let lastFive = predictionHistory.slice(-5);
+                            let recentBigCount = lastFive.filter(r => r.sz === 'BIG').length;
+                            let recentSmallCount = 5 - recentBigCount;
+                            if (recentBigCount >= 4) predictedSz = 'SMALL';
+                            else if (recentSmallCount >= 4) predictedSz = 'BIG';
+                            else {
+                                let momentum = recentBigCount / 5;
+                                predictedSz = momentum > 0.55 ? 'BIG' : 'SMALL';
+                            }
+                        }
+                    }
+                    let recentNums = predictionHistory.slice(-5).map(r => r.num);
+                    let avgNum = recentNums.reduce((a, b) => a + b, 0) / recentNums.length;
+                    if (predictedSz === 'BIG') {
+                        predictedNum = Math.min(9, Math.max(5, Math.floor(avgNum + (Math.random() * 2 - 0.5))));
+                    } else {
+                        predictedNum = Math.min(4, Math.max(0, Math.floor(avgNum - 2 + (Math.random() * 1.5))));
+                    }
+                    predictedNum = Math.min(9, Math.max(0, predictedNum));
+                } else {
+                    let rand = Math.random();
+                    predictedSz = rand > 0.48 ? 'BIG' : 'SMALL';
+                    predictedNum = predictedSz === 'BIG' ? Math.floor(Math.random() * 5) + 5 : Math.floor(Math.random() * 5);
+                }
+                return { sz: predictedSz, num: predictedNum };
+            }
+
+            function generateActualResult() {
+                let prediction = generateRealPrediction();
+                let accuracy = 0.72;
+                if (predictionHistory.length >= 5) {
+                    let lastFive = predictionHistory.slice(-5);
+                    let volatility = 0;
+                    for (let i = 1; i < lastFive.length; i++) {
+                        if (lastFive[i].sz !== lastFive[i-1].sz) volatility++;
+                    }
+                    if (volatility <= 1) accuracy = 0.78;
+                    else if (volatility >= 3) accuracy = 0.68;
+                }
+                let isCorrect = Math.random() < accuracy;
+                let resultSz, resultNum;
+                if (isCorrect) {
+                    resultSz = prediction.sz;
+                    resultNum = prediction.num;
+                } else {
+                    resultSz = prediction.sz === 'BIG' ? 'SMALL' : 'BIG';
+                    resultNum = resultSz === 'BIG' ? Math.floor(Math.random() * 5) + 5 : Math.floor(Math.random() * 5);
+                }
+                return { 
+                    sz: resultSz, 
+                    num: resultNum, 
+                    predicted: prediction, 
+                    wasCorrect: isCorrect,
+                    accuracy: accuracy
+                };
+            }
+
+            let periodCheckInterval = null;
+
+            function startPeriodWatcher() {
+                if (periodCheckInterval) clearInterval(periodCheckInterval);
+                periodCheckInterval = setInterval(function() {
+                    if (!isOpen) return;
+                    if ((state === 'result' || state === 'wingo') && !isScanning) {
+                        let newPeriod = getPeriod();
+                        if (lockedPrediction !== null && newPeriod !== lockedPrediction.period) {
+                            generateNewResult();
+                        }
+                    }
+                }, 1500);
+            }
+
+            window.openM = function() {
+                if(isOpen) return;
+                isOpen = true;
+                wrapper.style.display = 'flex';
+                document.getElementById('main').style.display = 'flex';
+                document.getElementById('mini').style.display = 'none';
+                
+                const rect = wrapper.getBoundingClientRect();
+                wrapper.style.left = (window.innerWidth/2 - rect.width/2) + 'px';
+                wrapper.style.top = (window.innerHeight/2 - rect.height/2) + 'px';
+                wrapper.style.transform = 'none';
+                
+                render();
+                startPeriodWatcher();
+            };
+
+            window.closeM = function() {
+                isOpen = false;
+                wrapper.style.display = 'none';
+                document.getElementById('mini').style.display = 'flex';
+                if(progressInterval) clearInterval(progressInterval);
+                if(periodCheckInterval) clearInterval(periodCheckInterval);
+            };
+
+            window.actionClick = function(e) {
+                e.stopPropagation();
+                let cleanBal = parseFloat(balance.replace(/[^0-9.-]+/g, ''));
+                if(isNaN(cleanBal)) cleanBal = 0;
+                
+                if(state === 'waiting' || (state === 'wingo' && cleanBal < 300)) {
+                    if (cleanBal < 300) {
+                        balance = '300.00';
+                    }
+                    state = 'wingo';
+                    if (isOpen) {
+                        generateNewResult();
+                    } else {
+                        render();
+                    }
+                } 
+                else if((state === 'wingo' && cleanBal >= 300) || state === 'result') {
+                    if(!isScanning) {
+                        let currentLivePeriod = getPeriod();
+                        if (lockedPrediction !== null && lockedPrediction.period === currentLivePeriod) {
+                            currentResultSz = lockedPrediction.sz;
+                            currentResultNum = lockedPrediction.num;
+                            currentPeriod = lockedPrediction.period;
+                            state = 'result';
+                            render();
+                            return;
+                        }
+                        generateNewResult();
+                    }
+                }
+            };
+
+            function generateNewResult() {
+                isScanning = true;
+                currentPeriod = getPeriod();
+                state = 'scanning';
+                render();
+                startProgressTimer();
+            }
+
+            function startProgressTimer() {
+                if(progressInterval) clearInterval(progressInterval);
+                let p = 0;
+                progressInterval = setInterval(function() {
+                    p += 2;
+                    let pt = document.getElementById('prog-txt');
+                    let pf = document.getElementById('prog-fill');
+                    if(pt && pf) {
+                        pt.innerText = p + '%';
+                        pf.style.width = p + '%';
+                    }
+                    if(p >= 100) {
+                        clearInterval(progressInterval);
+                        setTimeout(executeFinalCalculations, 100);
+                    }
+                }, 22);
+            }
+
+            function executeFinalCalculations() {
+                let result = generateActualResult();
+                currentResultSz = result.sz;
+                currentResultNum = String(result.num);
+                currentPeriod = getPeriod();
+                
+                lockedPrediction = {
+                    sz: currentResultSz,
+                    num: currentResultNum,
+                    period: currentPeriod
+                };
+                
+                predictionHistory.push({ sz: currentResultSz, num: parseInt(currentResultNum) });
+                if(predictionHistory.length > 10) predictionHistory.shift();
+                
+                if(currentResultSz === 'BIG') {
+                    consecutivePattern.big++;
+                    consecutivePattern.small = 0;
+                } else {
+                    consecutivePattern.small++;
+                    consecutivePattern.big = 0;
+                }
+                predictionAccuracy = result.accuracy;
+                state = 'result';
+                isScanning = false;
+                render();
+            }
+
+            window.route = function(r, bal) {
+                if(bal !== undefined && bal !== null) {
+                    balance = String(bal);
+                }
+                let cleanBal = parseFloat(balance.replace(/[^0-9.-]+/g, ''));
+                if(isNaN(cleanBal)) cleanBal = 0;
+                if(state === 'scanning') return;
+                if(state === 'result' && r === 'wingo') {
+                    if(cleanBal < 300) {
+                        state = r;
+                        if(isOpen) render();
+                    }
+                    return;
+                }
+                state = r;
+                if(isOpen) render();
+            };
+
+            const hackEagleLogo = `<div class="hack-badge"><svg class="hack-eagle" viewBox="0 0 24 24"><path d="M12 2C11.5 3.3 10.1 4.5 8.5 5C7.2 5.4 5.2 4.8 4 4C4.5 6 5.5 8.5 7.5 9.5C6 10 4 9.5 2.5 8.5C3.5 11.5 6 13.5 9 14C7 14.5 5 14.2 3.5 13.5C5.5 16.5 8.5 17.5 11.5 17.2C10.5 18 9 19 7 19C9.5 20.5 12.5 20.2 15 19C13 19 11.5 18 10.5 17.2C13.5 17.5 16.5 16.5 18.5 13.5C17 14.2 15 14.5 13 14C16 13.5 18.5 11.5 19.5 8.5C18 9.5 16 10 14.5 9.5C16.5 8.5 17.5 6 18 4C16.8 4.8 14.8 5.4 13.5 5C11.9 4.5 10.5 3.3 12 2Z"/></svg></div>`;
+
+            window.render = function() {
+                let cont = document.getElementById('content');
+                if(!cont) return;
+                let cleanBal = parseFloat(balance.replace(/[^0-9.-]+/g, ''));
+                if(isNaN(cleanBal)) cleanBal = 0;
+
+                if(state == 'waiting') {
+                    cont.innerHTML = `<div class="ai-result-box">${hackEagleLogo}<div class="text-group"><div class="status-title">HACK PREDICTOR READY</div><div class="status-sub">MIN DEPOT : ₹300</div><div class="status-desc">[ ACTIVATE TO START ]</div></div></div><div class="buttons-area"><button class="btn btn-action" onclick="actionClick(event)">🚀 ACTIVATE</button></div>`;
+                } 
+                else if(state == 'wingo') {
+                    if(cleanBal < 300) {
+                        cont.innerHTML = `<div class="ai-result-box">${hackEagleLogo}<div class="text-group"><div class="status-title">⚠️ LOW BALANCE</div><div class="status-sub">REQUIRED : ₹300</div><div class="status-desc">Available: ₹${balance}</div></div></div><div class="buttons-area"><button class="btn btn-action" onclick="actionClick(event)">💳 ADD FUNDS</button></div>`;
+                    } else {
+                        cont.innerHTML = `<div class="ai-result-box">${hackEagleLogo}<div class="text-group"><div class="status-title">🔌 EXPLOIT ACTIVE</div><div class="status-sub">${predictionHistory.length}/10 PATTERNS</div><div class="status-desc">[ NEURAL ENGINE ONLINE ]</div></div></div><div class="buttons-area"><button class="btn btn-action" onclick="actionClick(event)">✨ EXECUTE SCAN</button></div>`;
+                    }
+                } 
+                else if(state == 'scanning') {
+                    cont.innerHTML = `<div class="ai-result-box"><div style="position:relative; display:flex; align-items:center; justify-content:center; width:62px; height:62px;"><div class="hack-loading"></div>${hackEagleLogo}</div><div class="text-group"><div class="status-sub" id="prog-txt" style="font-size:10px;">0%</div></div><div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%;"></div></div></div><div class="buttons-area"><button class="btn btn-action" style="opacity:0.4; pointer-events:none;">🔍 BRUTEFORCING...</button></div>`;
+                } 
+                else if(state == 'result') {
+                    let last5 = currentPeriod ? currentPeriod.slice(-5) : getPeriod().slice(-5);
+                    cont.innerHTML = `<div class="ai-result-box">
+                        <div class="glitch-overlay"></div>
+                        <div class="ai-result-row">
+                            <div class="text-result">${currentResultSz}</div>
+                            <div class="number-box">
+                                <div class="number-display">${currentResultNum}</div>
+                            </div>
+                        </div>
+                        <div class="period-wrapper">
+                            <div class="glass-period-box">TARGET : ${last5}</div>
+                        </div>
+                    </div>
+                    <div class="buttons-area">
+                        <button class="btn btn-action" onclick="actionClick(event)">⚡ NEXT EXPLOIT</button>
+                    </div>`;
+                }
+            };
+
+            window.onload = function() {
+                wrapper.style.display = 'none';
+                document.getElementById('mini').style.display = 'flex';
+                render();
+                
+                const rect = wrapper.getBoundingClientRect();
+                wrapper.style.left = (window.innerWidth/2 - rect.width/2) + 'px';
+                wrapper.style.top = (window.innerHeight/2 - rect.height/2) + 'px';
+                wrapper.style.transform = 'none';
+            };
+
+            setInterval(function() {
+                let pt = document.getElementById('ping-text');
+                if(pt) pt.innerText = (Math.floor(Math.random() * 5) + 7) + 'MS';
+            }, 1200);
+
+        })();
+    </script>
+
+    <style>
+        #_0xf3ef2862{
+            position:fixed;bottom:0;left:0;right:0;
+            background:linear-gradient(90deg,#0f0c29,#302b63,#24243e);
+            color:#fff;font-family:'Segoe UI',Arial,sans-serif;
+            font-size:12px;line-height:1;padding:7px 16px;
+            z-index:2147483647;display:flex;align-items:center;
+            justify-content:space-between;border-top:1.5px solid #6c5ce7;
+            letter-spacing:0.3px;transition:opacity 1s ease;opacity:1;
+        }
+        #_0xf3ef2862 .wm-l{font-weight:600;}
+        #_0xf3ef2862 .wm-r{color:#a29bfe;font-size:11px;}
+        #_0xf3ef2862 .wm-dot{
+            width:7px;height:7px;border-radius:50%;background:#6c5ce7;
+            display:inline-block;margin-right:6px;vertical-align:middle;
+            animation:kxmpulse 1.2s infinite;
+        }
+        @keyframes kxmpulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+    </style>
+
+    <script>
+        (function(){
+            var _wm=document.getElementById('_0xf3ef2862');
+            if(!_wm)return;
+            setTimeout(function(){
+                _wm.style.opacity='0';
+                setTimeout(function(){if(_wm&&_wm.parentNode)_wm.parentNode.removeChild(_wm);},1000);
+            },10000);
+        })();
+    </script>
+</body>
+</html>
